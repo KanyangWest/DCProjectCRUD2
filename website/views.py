@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from .forms import SignUpForm, AddRecordForm
-from .models import Record
+from .models import Record, Note
 
 
 def home(request):
@@ -50,13 +50,15 @@ def register_user(request):
 
 
 def customer_record(request, pk):
-	if request.user.is_authenticated:
-		#Look up records
-		customer_record = Record.objects.get(id=pk)
-		return render(request, 'record.html', {'customer_record':customer_record})
-	else:
-		messages.success(request, "You must logged in to view page!")
-		return redirect('home')
+    if request.user.is_authenticated:
+        # Look up records
+        customer_record = Record.objects.get(id=pk)
+        notes = Note.objects.filter(record=customer_record)
+        return render(request, 'record.html', {'customer_record': customer_record, 'notes': notes})
+    else:
+        messages.success(request, "You must be logged in to view the page!")
+        return redirect('home')
+
 
 
 def delete_record(request, pk):
@@ -71,17 +73,19 @@ def delete_record(request, pk):
 
 
 def add_record(request):
-	form = AddRecordForm(request.POST or None)
-	if request.user.is_authenticated:
-		if request.method == "POST":
-			if form.is_valid():
-				add_record = form.save()
-				messages.success(request, "Record Added")
-				return redirect('home')
-		return render(request, 'add_record.html', {'form':form})
-	else:
-			messages.success(request, "You must be logged in")
-			return redirect('home')
+    if request.user.is_authenticated:
+        form = AddRecordForm(request.POST or None)
+        if request.method == "POST":
+            if form.is_valid():
+                record = form.save(commit=False)
+                record.user = request.user
+                record.save()
+                messages.success(request, "Record Added")
+                return redirect('home')
+        return render(request, 'add_record.html', {'form': form})
+    else:
+        messages.error(request, "You must be logged in")
+        return redirect('home')
 
 
 def update_record(request, pk):
@@ -96,3 +100,53 @@ def update_record(request, pk):
 	else:
 			messages.success(request, "You must be logged in")
 			return redirect('home')
+
+
+def create_note(request, pk):
+    if request.user.is_authenticated:
+        if request.method == 'POST':
+            title = request.POST.get('title')
+            content = request.POST.get('content')
+            record = Record.objects.get(id=pk)
+            note = Note.objects.create(record=record, title=title, content=content)
+            messages.success(request, 'Note added successfully.')
+            return redirect('record', pk=pk)  # Redirect to create_note view for the same record
+        
+        customer_record = Record.objects.get(id=pk)
+        notes = Note.objects.filter(record=customer_record)
+        return render(request, 'create_note.html', {'customer_record': customer_record, 'notes': notes})
+    
+    else:
+        messages.error(request, 'You must be logged in to add a note.')
+        return redirect('home')
+
+
+
+def update_note(request, note_id):
+    if request.user.is_authenticated:
+        note = Note.objects.get(id=note_id)
+        if request.method == 'POST':
+            title = request.POST.get('title')
+            content = request.POST.get('content')
+            record_id = note.record.id
+            note.title = title
+            note.content = content
+            note.save()
+            messages.success(request, 'Note updated successfully.')
+            return redirect('record', pk=record_id)
+        return render(request, 'update_note.html', {'note': note})
+    else:
+        messages.error(request, 'You must be logged in to update a note.')
+        return redirect('home')
+
+
+def delete_note(request, note_id):
+    if request.user.is_authenticated:
+        note = Note.objects.get(id=note_id)
+        record_id = note.record.id
+        note.delete()
+        messages.success(request, 'Note deleted successfully.')
+        return redirect('record', pk=record_id)
+    else:
+        messages.error(request, 'You must be logged in to delete a note.')
+        return redirect('home')

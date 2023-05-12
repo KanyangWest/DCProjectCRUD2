@@ -2,70 +2,66 @@
 
 {% block content %}
 
-	{% if user.is_authenticated %}
+  {% if user.is_authenticated %}
 
-	You logged in as: 
+    You are logged in as: <strong>{{ user.username }}</strong><br/>
+    <br/>
+    <br/>
+    <table class="table table-striped table-hover table-bordered table-sm">
+      <thead class="table-dark">
+        <tr>
+          <th scope="col">Name</th>
+          <th scope="col">Email</th>
+          <th scope="col">Phone</th>
+          <th scope="col">Address</th>
+          <th scope="col">City</th>
+          <th scope="col">Province</th>
+          <th scope="col">Company</th>
+          <th scope="col">Created At</th>
+          <th scope="col">ID</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% if records %}
+          {% for record in records %}
+            {% if record.user == user %}
+              <tr>
+                <td><a href="{% url 'record' record.id %}">{{ record.first_name }} {{ record.last_name }}</a></td>
+                <td>{{ record.email_address }}</td>
+                <td>{{ record.phone_number }}</td>
+                <td>{{ record.address }}</td>
+                <td>{{ record.city }}</td>
+                <td>{{ record.province }}</td>
+                <td>{{ record.company_name }}</td>
+                <td>{{ record.created_at }}</td>
+                <td><a href="{% url 'record' record.id %}">{{ record.id }}</a></td>
+              </tr>
+            {% endif %}
+          {% endfor %}
+        {% else %}
+          <tr>
+            <td colspan="9">No records found.</td>
+          </tr>
+        {% endif %}
+      </tbody>
+    </table>
 
-	<table class="table table-striped table-hover table-bordered table-sm">
-  		<thead class="table-dark">
-    		<tr>
-      		<th scope="col">Name</th>
-     		<th scope="col">Email</th>
-      		<th scope="col">Phone</th>
-      		<th scope="col">Address</th>
-      		<th scope="col">City</th>
-      		<th scope="col">Province</th>
-      		<th scope="col">Company</th>
-      		<th scope="col">Created At</th>
-      		<th scope="col">ID</th>
-    		</tr>
-  		</thead>
-  	<tbody>
-    
-    {% if records %}
-		{% for record in records %}
-		<tr>
-			<td><a href="{% url 'record' record.id %}">{{ record.first_name }}
-			{{ record.last_name }}</a></td>
-			<td>{{ record.email_address }}</td>
-			<td>{{ record.phone_number }}</td>
-			<td>{{ record.address }}</td>
-			<td>{{ record.city }}</td>
-			<td>{{ record.province }}</td>
-			<td>{{ record.company_name }}</td>
-			<td>{{ record.created_at }}</td>
-			<td><a href="{% url 'record' record.id %}">{{ record.id }}</a></td>
-			<br/>
-		{% endfor %}
-	{% endif %}
+  {% else %}
+    <div class="col-md-6 offset-md-3">
+      <br/>
+      <form method="POST" action="{% url 'home' %}">
+        {% csrf_token %}
+        
+        <div class="mb-3">
+          <input type="text" class="form-control" name="username" placeholder="Username" required>
+        </div>
+        <div class="mb-3">
+          <input type="password" class="form-control" name="password" placeholder="Password" required>
+        </div>
+        <br/>
+        <button type="submit" class="btn btn-secondary">Login</button>
+      </form>
+    </div>
+  {% endif %}
 
-    
-  	</tbody>
-	</table>
-
-
-
-
-	{% else %}
-	<div class="col-md-6 offset-md-3">
-	<br/>
-	<form method="POST" action="{% url 'home' %}">
-		{% csrf_token %}
-		
-  		<div class="mb-3">
-
-    	<input type="text" class="form-control" name="username", placeholder="Username" required>
-    
-  		</div>
-  		<div class="mb-3">
-
-    	<input type="password" class="form-control" name="password", placeholder="Password" required>
-  		</div>
-  		<br/>
-  		<button type="submit" class="btn btn-secondary">Login</button>
-	</form>
-	</div>
-
-
-{% endif %}
 {% endblock %}

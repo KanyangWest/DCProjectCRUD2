@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="card">
+  <div class="card-header">
+    {{ customer_record.first_name }} {{ customer_record.last_name }}
+  </div>
+  <div class="card-body">
+    <p class="card-text">
+    	<strong>Email: </strong>{{ customer_record.email_address }}<br/>
+    	<br/>
+		<strong>Phone: </strong>{{ customer_record.phone_number }}<br/>
+		<br/>
+		<strong>Address: </strong>{{ customer_record.address }}<br/>
+		<br/>
+		<strong>City: </strong>{{ customer_record.city }}<br/>
+		<br/>
+		<strong>Province: </strong>{{ customer_record.province }}<br/>
+		<br/>
+		<strong>Company Name: </strong>{{ customer_record.company_name }}<br/>
+		<br/>
+		<strong>Created At: </strong>{{ customer_record.created_at }}<br/>
+		<br/>
+		<strong>Record ID: </strong>{{ customer_record.id }}<br/>
+	</p>
+    
+    
+  </div>
+</div>
+<br/>
+<a href="{% url 'home' %}" class="btn btn-secondary">Back</a>      
+<a href="{% url 'delete_record' customer_record.id %}" class="btn btn-danger">Delete</a>      <a href="{% url 'update_record' customer_record.id %}" class="btn btn-secondary">Update</a>
+<br/>
+<br/>
+
+<div class="card">
+  <div class="card-header">
+    Notes Tab
+  </div>
+  <div class="card-body">
+    <h5 class="card-title">Special title treatment</h5>
+    <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
+    <a href="#" class="btn btn-primary">Go somewhere</a>
+  </div>
+</div>
+
+
+{% endblock %}

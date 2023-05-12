@@ -1,14 +1,15 @@
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django import forms
-
+from .models import Record
 
 class SignUpForm(UserCreationForm):
-	email = forms.EmailField(Label = "", widget = forms.TextInput(attrs  = {'class':'form-control', 'placeholder':'Email Address'}))
-	first_name = forms.Charfield(Label = "", max_length= 100 , widget = forms.TextInput(attrs  = {'class':'form-control', 'placeholder':'First Name'}))
-	last_name  = forms.Charfield(Label = "", max_length=100 , widget = forms.TextInput(attrs  = {'class':'form-control', 'placeholder':'Last Name'}))
+	email = forms.EmailField(label = "", widget=forms.TextInput(attrs={'class':'form-control', 'placeholder':'Email Address'}))
+	first_name = forms.CharField(label = "", max_length=100 , widget=forms.TextInput(attrs={'class':'form-control', 'placeholder':'First Name'}))
+	last_name  = forms.CharField(label = "", max_length=100 , widget=forms.TextInput(attrs={'class':'form-control', 'placeholder':'Last Name'}))
 
-	class Meta"
+
+	class Meta:
 		model = User
 		fields = ('username', 'first_name', 'last_name', 'email', 'password1', 'password2')
 
@@ -31,3 +32,18 @@ class SignUpForm(UserCreationForm):
 		self.fields['password2'].label = ''
 		self.fields['password2'].help_text = '<span class="form-text text-muted"><small>Enter the same password as before, for verification.</small></span>'
 
+#Add Record form
+
+class AddRecordForm(forms.ModelForm):
+	first_name = forms.CharField(required=True, widget=forms.widgets.TextInput(attrs={"placeholder":"First Name", "class":"form-control"}), label="")
+	last_name = forms.CharField(required=True, widget=forms.widgets.TextInput(attrs={"placeholder":"Last Name", "class":"form-control"}), label="")
+	address = forms.CharField(required=True, widget=forms.widgets.TextInput(attrs={"placeholder":"Address", "class":"form-control"}), label="")
+	city = forms.CharField(required=True, widget=forms.widgets.TextInput(attrs={"placeholder":"City", "class":"form-control"}), label="")
+	province = forms.CharField(required=True, widget=forms.widgets.TextInput(attrs={"placeholder":"Province", "class":"form-control"}), label="")
+	company_name = forms.CharField(required=True, widget=forms.widgets.TextInput(attrs={"placeholder":"Company name", "class":"form-control"}), label="")
+	email_address = forms.CharField(required=True, widget=forms.widgets.TextInput(attrs={"placeholder":"Email Address", "class":"form-control"}), label="")
+	phone_number = forms.CharField(required=True, widget=forms.widgets.TextInput(attrs={"placeholder":"Phone", "class":"form-control"}), label="")
+
+	class Meta:
+		model = Record
+		exclude = ("user",)
